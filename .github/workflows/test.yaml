@@ -1,3 +1,4 @@
+---
 name: test
 
 on: [push, pull_request]
@@ -11,4 +12,4 @@ jobs:
       uses: ibiqlik/action-yamllint@v3
       with:
         config_data: "{extends: default}"
-        file_or_dir: *yml
+        file_or_dir: ./*yml
