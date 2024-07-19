@@ -40,11 +40,6 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    # if torchserve is not being used, comment out the
-    # dependency.
-    depends_on:
-      torchserve:
-        condition: service_healthy
     volumes:
       - '${VOL_PREFIX}:/logs'
     # cause FFT wisdom to be cached.
