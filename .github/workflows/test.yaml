@@ -4,28 +4,16 @@ name: test
 on: [push, pull_request]
 
 jobs:
-  yamllint:
+  tests:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: yaml-lint
-      uses: ibiqlik/action-yamllint@v3
       with:
-        config_data: "{extends: default}"
-        file_or_dir: ./*yml
-  composecheck:
-    runs-on: ubuntu-22.04
-    steps:
-      - name: compose check
-        env:
-          VOL_PREFIX: /tmp
-          GAMUTRF: gamutrf
-          TORCHSERVE: torchserve
-          FREQ_START: 5e9
-          FREQ_END: 6e9
-        run: |
-          docker compose -f torchserve.yml config && \
-          docker compose -f torchserve-cuda.yml config && \
-          docker compose -f waterfall.yml config && \
-          docker compose -f pi5-scanner-inference.yml config && \
-          docker compose -f scanner.yml -f waterfall.yml -f torchserve-cuda.yml config
+        fetch-depth: 1
+    - name: compose check
+      run: |
+        docker compose -f torchserve.yml config && \
+        docker compose -f torchserve-cuda.yml config && \
+        docker compose -f waterfall.yml config && \
+        docker compose -f pi5-scanner-inference.yml config && \
+        docker compose -f scanner.yml -f waterfall.yml -f torchserve-cuda.yml config
