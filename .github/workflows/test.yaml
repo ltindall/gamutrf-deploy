@@ -1,0 +1,14 @@
+name: test
+
+on: [push, pull_request]
+
+jobs:
+  yamllint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: yaml-lint
+      uses: ibiqlik/action-yamllint@v3
+      with:
+        config_data: "{extends: default}"
+        file_or_dir: *yml
