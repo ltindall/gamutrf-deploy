@@ -10,7 +10,7 @@ networks:
 services:
   waterfall:
     restart: always
-    image: iqtlabs/gamutrf-waterfall:v0.5.61
+    image: iqtlabs/gamutrf-waterfall:v0.5.62
     networks:
       - gamutrf
     ports:
