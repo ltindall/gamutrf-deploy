@@ -13,3 +13,12 @@ jobs:
       with:
         config_data: "{extends: default}"
         file_or_dir: ./*yml
+  composecheck:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: compose check
+        run:
+          GAMUTRF=gamutrf VOL_PREFIX=/tmp docker compose -f waterfall.yml config
+          VOL_PREFIX=/tmp docker compose -f torchserve.yml config
+          VOL_PREFIX=/tmp docker compose -f torchserve-cuda.yml config
+          TORCHSERVE=torchserve FREQ_START=5e9 FREQ_END=6e9 VOL_PREFIX=/tmp docker compose -f pi5-scanner-inference.yml config
