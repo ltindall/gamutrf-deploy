@@ -1,4 +1,4 @@
-# gamutrf-deply
+# gamutrf-deploy
 
 # Deploying GamutRF
 
