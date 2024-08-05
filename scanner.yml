@@ -17,7 +17,7 @@ services:
       - '1883:1883'
   gamutrf:
     restart: always
-    image: iqtlabs/gamutrf:v0.5.62
+    image: iqtlabs/gamutrf:v0.5.65
     networks:
       - gamutrf
     ports:
@@ -47,10 +47,10 @@ services:
       - 'HOME=/logs'
     command:
       - gamutrf-scan
-      - --fgaas_addr=0.0.0.0
-      - --fgaas_port=10002
-      - --logaddr=0.0.0.0
-      - --logport=10000
+      - --iq_zmq_addr=0.0.0.0
+      - --iq_zmq_port=10002
+      - --fft_zmq_addr=0.0.0.0
+      - --fft_zmq_port=10000
       - --igain=40
       - '--freq-start=${FREQ_START}'
       - '--freq-end=${FREQ_END}'
@@ -88,6 +88,7 @@ services:
       - --iq_inference_model_server=torchserve:8080
       - --iq_inference_model_name=torchsig_model
       # - --write_samples=1000000000
+      - --no-write_fft_points
       - --sample_dir=/logs/samples
     healthcheck:
       test: [CMD, "/gamutrf/bin/scanhc.sh", "9000"]
