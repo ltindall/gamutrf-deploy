@@ -17,7 +17,7 @@ services:
       - '1883:1883'
   gamutrf:
     restart: always
-    image: iqtlabs/gamutrf:v0.5.65
+    image: iqtlabs/gamutrf:v0.5.66
     networks:
       - gamutrf
     ports:
