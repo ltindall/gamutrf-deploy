@@ -15,7 +15,7 @@ and to install [docker with GPU support](https://docs.nvidia.com/datacenter/clou
 
 NOTE: If you do not need inference, omit ```-f torchserve-cuda.yml``` in the commands below, and set ```TORCHSERVE``` to a blank string.
 
-# Standalone scenario
+## Standalone scenario
 
 ```
           +------------+
@@ -33,3 +33,30 @@ In this scenario, the complete GamutRF system is run on one machine, typically a
 3. GamutRF waterfall UI will appear on port 9003 (e.g. ```http://localhost:9003``` if running a browser on the same machine)
 
 Once the system is up and running, sample recording and frequency ranges can be controlled from the Waterfall UI.
+
+## Troubleshooting
+
+### SoapySDR errors allocating buffers
+
+Run ```echo 0 > /sys/module/usbcore/parameters/usbfs_memory_mb``` as root before starting the scanner(s).
+
+### Containers won't start using Ettus SDRs
+
+#### ```[ERROR] [USB] USB open failed: insufficient permissions```
+
+Ettus SDRs download firmware and switch USB identities when first powered up. Restart the affected container to work around this (if run with docker compose, restart will happen automatically).
+
+#### ```[ERROR] [UHD] An unexpected exception was caught in a task loop.The task loop will now exit, things may not work.boost: mutex lock failed in pthread_mutex_lock: Invalid argument```
+
+UHD driver arguments ```num_recv_frames``` or ```recv_frame_size``` may be too high. The defaults are defined as ETTUS_ARGS in [utils.py](https://github.com/IQTLabs/gamutRF/blob/main/gamutrf/utils.py)
+. Try reducing one or both via ```--sdrargs```. For example, ```--sdrargs num_recv_frames=64,recv_frame_size=8200,type=b200```.
+
+#### ```[ERROR] [UHD] EnvironmentError: IOError: usb rx6 transfer status: LIBUSB_TRANSFER_OVERFLOW```
+
+Stop containers, and reset the Ettus as follows:
+
+```
+$ /usr/lib/uhd/utils/b2xx_fx3_utils -D
+$ /usr/lib/uhd/utils/b2xx_fx3_utils -U
+$ /usr/lib/uhd/utils/b2xx_fx3_utils -S
+```
