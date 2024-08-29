@@ -9,8 +9,8 @@ networks:
     name: none
 services:
   waterfall:
-    restart: unless-stopped
-    image: iqtlabs/gamutrf-waterfall:v0.5.66
+    restart: unless_stopped
+    image: iqtlabs/gamutrf-waterfall:v0.5.65
     networks:
       - gamutrf
     ports:
@@ -21,13 +21,16 @@ services:
       - gamutrf-waterfall
       - --api_endpoint=${GAMUTRF}:9001
       - --scanners=${GAMUTRF}:10000
-      - --inference_server=${GAMUTRF}
-      - --inference_port=10001
-      - --save_path=/logs/waterfall
       - --port=9003
-      - --detection_type=narrowband
-      - --n_detect=1
-      - --width=12
-      - --height=6
-      - --min_freq=0
-      - --max_freq=0
+      - --refresh=1
+      
+      # - --inference_server=${GAMUTRF}
+      # - --inference_port=10001
+      # - --save_path=/logs/waterfall
+      # - --detection_type=narrowband
+      # - --n_detect=1
+      # - --width=12
+      # - --height=6
+      # - --min_freq=0
+      # - --max_freq=0
+      

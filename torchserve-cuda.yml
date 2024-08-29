@@ -9,7 +9,7 @@ networks:
     name: none
 services:
   torchserve:
-    restart: always
+    restart: unless-stopped
     image: iqtlabs/cuda-torchserve:v0.0.9
     healthcheck:
       start_period: 120s

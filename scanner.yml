@@ -9,15 +9,15 @@ networks:
     name: none
 services:
   mqtt:
-    restart: always
+    restart: unless-stopped
     image: iqtlabs/edgetech-mqtt-dev:v1.0
     networks:
       - gamutrf
     ports:
       - '1883:1883'
   gamutrf:
-    restart: always
-    image: iqtlabs/gamutrf:v0.5.66
+    restart: unless-stopped
+    image: iqtlabs/gamutrf:latest
     networks:
       - gamutrf
     ports:
@@ -71,22 +71,24 @@ services:
       - --colormap=20
       - --tune-jitter-hz=0
       - --pretune
+
+      - --correct-iq
       # - --external_gps_server=1.2.3.4
       # - --external_gps_server_port=8888
-      - --inference_text_color=black
-      - --inference_output_dir=/logs/inference
-      - --inference_addr=0.0.0.0
-      - --inference_port=10001
-      - --inference_min_confidence=0.25
-      - --inference_min_db=-1e9
-      - --inference_text_color=black
-      - --n_inference=7
-      - --n_image=7
+      # - --inference_text_color=black
+      # - --inference_output_dir=/logs/inference
+      # - --inference_addr=0.0.0.0
+      # - --inference_port=10001
+      # - --inference_min_confidence=0.25
+      # - --inference_min_db=-1e9
+      # - --inference_text_color=black
+      # - --n_inference=7
+      # - --n_image=7
       # - --inference_model_server=torchserve:8080
       # - --inference_model_name=mini2_snr
-      - --iq_inference_squelch_db=-50
-      - --iq_inference_model_server=torchserve:8080
-      - --iq_inference_model_name=torchsig_model
+      # - --iq_inference_squelch_db=-50
+      # - --iq_inference_model_server=torchserve:8080
+      # - --iq_inference_model_name=torchsig_model
       # - --write_samples=1000000000
       - --no-write_fft_points
       - --sample_dir=/logs/samples

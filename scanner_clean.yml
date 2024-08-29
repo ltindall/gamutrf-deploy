@@ -1,0 +1,118 @@
+---
+networks:
+  gamutrf:
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: 9000
+  default:
+    external: true
+    name: none
+services:
+  mqtt:
+    restart: unless-stopped
+    image: iqtlabs/edgetech-mqtt-dev:v1.0
+    networks:
+      - gamutrf
+    ports:
+      - '1883:1883'
+  gamutrf:
+    restart: unless-stopped
+    #image: iqtlabs/gamutrf:v0.5.65
+    image: iqtlabs/gamutrf
+    build: /home/ltindall/iqt/gamutRF
+    pull_policy: build
+    privileged: true
+    networks:
+      - gamutrf
+    ports:
+      - '9001:9001'
+      - '10000:10000'
+      - '10001:10001'
+      - '10002:10002'
+    cap_add:
+      - SYS_NICE
+      - SYS_RAWIO
+    devices:
+      - /dev/bus/usb:/dev/bus/usb
+      - /dev/dri/renderD128:/dev/dri/renderD128
+    # nvidia container toolkit etc must be installed.
+    # Comment out "deploy" if on non-x86 platform (e.g. Pi4)
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['0']
+              # count: 1
+              capabilities: [gpu]
+    volumes:
+      - '${VOL_PREFIX}:/logs'
+      - '/tmp/.X11-unix:/tmp/.X11-unix'
+    runtime: nvidia
+    # cause FFT wisdom to be cached.
+    environment:
+      - 'HOME=/logs'
+      - 'XDG_RUNTIME_DIR=/tmp'
+      - 'NVIDIA_DRIVER_CAPABILITIES=all'
+      - 'NVIDIA_VISIBLE_DEVICES=all'
+      - DISPLAY
+    command:
+      - gamutrf-scan
+      - '--freq-end=${FREQ_END}'
+      - '--freq-start=${FREQ_START}'
+      - --igain=40
+      - --samp-rate=20.48e6
+      - --nfft=1024
+      - --tune-step-fft=512
+
+      - --tuneoverlap=1
+      - --bucket_range=1
+
+      - --pretune
+      # - --no-vkfft
+      # - --correct-iq
+      # - --dc_block_len=1024
+      # - --dc_block_long
+
+      # - --sample_dir=/logs/samples
+      # - --write_samples=1000000000
+      # - --no-write_fft_points
+      # - --fft_zmq_addr=0.0.0.0 # default
+      # - --fft_zmq_port=10000 # default
+      # - --iq_zmq_addr=0.0.0.0 # default
+      # - --iq_zmq_port=10002 # default
+      # - --tuning_ranges=905e6-930e6,2.2e9-2.6e9,5.1e9-5.9e9
+      # - --db_clamp_floor=-150
+      # - --fft_batch_size=256
+      # - --mqtt_server=mqtt
+      # - --no-compass
+      # - --peak_fft_range=50
+      #- --use_external_gps
+      #- --use_external_heading
+      
+      # - --rotate_secs=60
+      # - --colormap=20
+      # - --tune-jitter-hz=0
+      # - --pretune
+      # - --external_gps_server=1.2.3.4
+      # - --external_gps_server_port=8888
+      #- --inference_text_color=black
+      #- --inference_output_dir=/logs/inference
+      #- --inference_addr=0.0.0.0
+      #- --inference_port=10001
+      #- --inference_min_confidence=0.25
+      #- --inference_min_db=-1e9
+      #- --inference_text_color=black
+      #- --n_inference=7
+      #- --n_image=7
+      # - --inference_model_server=torchserve:8080
+      # - --inference_model_name=mini2_snr
+      #- --iq_inference_squelch_db=-50
+      #- --iq_inference_model_server=torchserve:8080
+      #- --iq_inference_model_name=torchsig_model
+      
+    healthcheck:
+      test: [CMD, "/gamutrf/bin/scanhc.sh", "9000"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
