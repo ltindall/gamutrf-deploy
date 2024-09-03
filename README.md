@@ -64,7 +64,7 @@ UHD driver arguments ```num_recv_frames``` or ```recv_frame_size``` may be too h
 Stop containers, and reset the Ettus as follows:
 
 ```
-$ /usr/lib/uhd/utils/b2xx_fx3_utils -D
-$ /usr/lib/uhd/utils/b2xx_fx3_utils -U
-$ /usr/lib/uhd/utils/b2xx_fx3_utils -S
+$ /usr/libexec/uhd/utils/b2xx_fx3_utils -D
+$ /usr/libexec/uhd/utils/b2xx_fx3_utils -U
+$ /usr/libexec/uhd/utils/b2xx_fx3_utils -S
 ```
