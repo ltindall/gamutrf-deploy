@@ -1,0 +1,38 @@
+---
+networks:
+  gamutrf:
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: 9000
+  default:
+    external: true
+    name: none
+services:
+  torchserve:
+    restart: unless-stopped
+    image: iqtlabs/cuda-torchserve:v0.0.9
+    healthcheck:
+      start_period: 120s
+    networks:
+      - gamutrf
+    ports:
+      - '8080:8080'
+      - '8081:8081'
+    volumes:
+      - '${VOL_PREFIX}/model_store:/model_store'
+      - '/root/.cache/pip:/root/.cache/pip'
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    command:
+      # can be multiple models
+      # e.g. mini2_snr=mini2_snr.mar,another_mini2_snr=another_mini2_snr.mar
+      # As of torchserve v11, you will need to add setuptools==69.5.1
+      # to your requirements.txt when generating a MAR file
+      # https://github.com/pytorch/serve/issues/3176
+      - --disable-token-auth
+      - --models siggen_model=siggen_model.mar

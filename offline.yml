@@ -9,14 +9,14 @@ networks:
     name: none
 services:
   mqtt:
-    restart: unless-stopped
+    restart: no
     image: iqtlabs/edgetech-mqtt-dev:v1.0
     networks:
       - gamutrf
     ports:
       - '1883:1883'
   gamutrf:
-    restart: unless-stopped
+    restart: no
     #image: iqtlabs/gamutrf:v0.5.65
     image: iqtlabs/gamutrf
     build: /home/ltindall/iqt/gamutRF
@@ -57,11 +57,12 @@ services:
       - 'NVIDIA_VISIBLE_DEVICES=all'
       - DISPLAY
     command:
-      - gamutrf-scan
-      - '--freq-end=${FREQ_END}'
-      - '--freq-start=${FREQ_START}'
+      - gamutrf-offline
+      - /logs/data/fm.sigmf-meta
+      # - '--freq-end=${FREQ_END}'
+      # - '--freq-start=${FREQ_START}'
       - --igain=40
-      - '--samp-rate=${SAMPLE_RATE}'
+      # - '--samp-rate=${SAMPLE_RATE}'
       - --nfft=1024
       - --tune-step-fft=512
 
@@ -110,8 +111,8 @@ services:
       # - --inference_model_server=torchserve:8080
       # - --inference_model_name=mini2_snr
       #- --iq_inference_squelch_db=-50
-      #- --iq_inference_model_server=torchserve:8080
-      #- --iq_inference_model_name=torchsig_model
+      - --iq_inference_model_server=torchserve:8080
+      - --iq_inference_model_name=siggen_model
       
     healthcheck:
       test: [CMD, "/gamutrf/bin/scanhc.sh", "9000"]
