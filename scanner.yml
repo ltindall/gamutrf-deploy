@@ -17,7 +17,7 @@ services:
       - '1883:1883'
   gamutrf:
     restart: always
-    image: iqtlabs/gamutrf:v0.5.70
+    image: iqtlabs/gamutrf:v0.5.71
     networks:
       - gamutrf
     ports:
@@ -74,7 +74,7 @@ services:
       # - --external_gps_server=1.2.3.4
       # - --external_gps_server_port=8888
       - --inference_text_color=black
-      - --inference_output_dir=/logs/inference
+      # - --inference_output_dir=/logs/inference
       - --inference_addr=0.0.0.0
       - --inference_port=10001
       - --inference_min_confidence=0.25
