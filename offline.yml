@@ -113,6 +113,7 @@ services:
       #- --iq_inference_squelch_db=-50
       - --iq_inference_model_server=torchserve:8080
       - --iq_inference_model_name=siggen_model
+      - --inference_batch=1024
       
     healthcheck:
       test: [CMD, "/gamutrf/bin/scanhc.sh", "9000"]
