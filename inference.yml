@@ -1,5 +1,4 @@
 ---
-# VOL_PREFIX=/data RECORDING=/logs/fm.sigmf-meta docker compose -f offline.yml up gamutrf
 networks:
   gamutrf:
     driver: bridge
@@ -9,21 +8,72 @@ networks:
     external: true
     name: none
 services:
+  waterfall:
+    restart: unless-stopped
+    image: iqtlabs/gamutrf-waterfall:v0.5.71
+    # image: iqtlabs/gamutrf-waterfall
+    # build: 
+    #   context: /home/ltindall/iqt/gamutRF
+    #   dockerfile: /home/ltindall/iqt/gamutRF/docker/Dockerfile.waterfall
+    # pull_policy: build
+    networks:
+      - gamutrf
+    ports:
+      - '9003:9003'
+    volumes:
+      - '${VOL_PREFIX}:/logs'
+    command:
+      - gamutrf-waterfall
+      - --api_endpoint=${GAMUTRF}:9001
+      - --scanners=${GAMUTRF}:10000
+      - --port=9003
+      - --refresh=1
+  
   mqtt:
-    restart: no
+    restart: unless-stopped
     image: iqtlabs/edgetech-mqtt-dev:v1.0
     networks:
       - gamutrf
     ports:
       - '1883:1883'
+
+  torchserve:
+    restart: unless-stopped
+    image: iqtlabs/cuda-torchserve:v0.0.9
+    healthcheck:
+      start_period: 120s
+    networks:
+      - gamutrf
+    ports:
+      - '8080:8080'
+      - '8081:8081'
+    volumes:
+      - '${VOL_PREFIX}/model_store:/model_store'
+      - '/root/.cache/pip:/root/.cache/pip'
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    command:
+      # can be multiple models
+      # e.g. mini2_snr=mini2_snr.mar,another_mini2_snr=another_mini2_snr.mar
+      # As of torchserve v11, you will need to add setuptools==69.5.1
+      # to your requirements.txt when generating a MAR file
+      # https://github.com/pytorch/serve/issues/3176
+      - --disable-token-auth
+      # - --models siggen_experiment=siggen_experiment.mar
+      - --models apartment_experiment=apartment_experiment.mar
+
   gamutrf:
     user: '${UID}:${GID}'
-    restart: no
-    #image: iqtlabs/gamutrf:v0.5.65
+    restart: unless-stopped
+    image: iqtlabs/gamutrf:v0.5.71
     # image: iqtlabs/gamutrf
     # build: /home/ltindall/iqt/gamutRF
     # pull_policy: build
-    image: iqtlabs/gamutrf:v0.5.71
     privileged: true
     networks:
       - gamutrf
@@ -60,21 +110,27 @@ services:
       - 'NVIDIA_VISIBLE_DEVICES=all'
       - DISPLAY
     command:
-      - gamutrf-offline
-      # - /logs/data/fm.sigmf-meta
-      - /logs/data/samples_1726509534.650000_5745239998Hz_20480000sps.raw.sigmf-meta
-      # - '${RECORDING}'
+      - gamutrf-scan
+      - '--freq-end=${FREQ_END}'
+      - '--freq-start=${FREQ_START}'
+      - --igain=40
+      - '--samp-rate=${SAMPLE_RATE}'
+
       - --nfft=1024
       - --tune-step-fft=512
+
       - --tuneoverlap=1
       - --bucket_range=1
+
       - --pretune
+
+
       - --sample_dir=/logs/samples
       - --write_samples=100000000
+
       - --iq_inference_model_server=torchserve:8080
       - --iq_inference_model_name=apartment_experiment
-      - --no-iq_inference_background
-      - --no-vkfft
+      
     healthcheck:
       test: [CMD, "/gamutrf/bin/scanhc.sh", "9000"]
       interval: 10s

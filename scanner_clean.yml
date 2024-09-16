@@ -16,6 +16,7 @@ services:
     ports:
       - '1883:1883'
   gamutrf:
+    user: '${UID}:${GID}'
     restart: unless-stopped
     image: iqtlabs/gamutrf:v0.5.71
     # image: iqtlabs/gamutrf

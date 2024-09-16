@@ -35,4 +35,5 @@ services:
       # to your requirements.txt when generating a MAR file
       # https://github.com/pytorch/serve/issues/3176
       - --disable-token-auth
-      - --models siggen_experiment=siggen_experiment.mar
+      # - --models siggen_experiment=siggen_experiment.mar
+      - --models apartment_experiment=apartment_experiment.mar
