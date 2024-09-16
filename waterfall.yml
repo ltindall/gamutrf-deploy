@@ -9,8 +9,8 @@ networks:
     name: none
 services:
   waterfall:
-    restart: unless-stopped
-    image: iqtlabs/gamutrf-waterfall:latest
+    restart: always
+    image: iqtlabs/gamutrf-waterfall:v0.5.71
     networks:
       - gamutrf
     ports:

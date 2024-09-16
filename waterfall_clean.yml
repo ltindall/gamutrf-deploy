@@ -10,12 +10,12 @@ networks:
 services:
   waterfall:
     restart: unless-stopped
-    # image: iqtlabs/gamutrf-waterfall:v0.5.65
-    image: iqtlabs/gamutrf-waterfall
-    build: 
-      context: /home/ltindall/iqt/gamutRF
-      dockerfile: /home/ltindall/iqt/gamutRF/docker/Dockerfile.waterfall
-    pull_policy: build
+    image: iqtlabs/gamutrf-waterfall:v0.5.71
+    # image: iqtlabs/gamutrf-waterfall
+    # build: 
+    #   context: /home/ltindall/iqt/gamutRF
+    #   dockerfile: /home/ltindall/iqt/gamutRF/docker/Dockerfile.waterfall
+    # pull_policy: build
     networks:
       - gamutrf
     ports:

@@ -16,8 +16,8 @@ services:
     ports:
       - '1883:1883'
   gamutrf:
-    restart: unless-stopped
-    image: iqtlabs/gamutrf:latest
+    restart: always
+    image: iqtlabs/gamutrf:v0.5.71
     networks:
       - gamutrf
     ports:
@@ -75,15 +75,15 @@ services:
       - --correct-iq
       # - --external_gps_server=1.2.3.4
       # - --external_gps_server_port=8888
-      # - --inference_text_color=black
+      - --inference_text_color=black
       # - --inference_output_dir=/logs/inference
-      # - --inference_addr=0.0.0.0
-      # - --inference_port=10001
-      # - --inference_min_confidence=0.25
-      # - --inference_min_db=-1e9
-      # - --inference_text_color=black
-      # - --n_inference=7
-      # - --n_image=7
+      - --inference_addr=0.0.0.0
+      - --inference_port=10001
+      - --inference_min_confidence=0.25
+      - --inference_min_db=-1e9
+      - --inference_text_color=black
+      - --n_inference=7
+      - --n_image=7
       # - --inference_model_server=torchserve:8080
       # - --inference_model_name=mini2_snr
       # - --iq_inference_squelch_db=-50

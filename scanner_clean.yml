@@ -17,10 +17,10 @@ services:
       - '1883:1883'
   gamutrf:
     restart: unless-stopped
-    #image: iqtlabs/gamutrf:v0.5.65
-    image: iqtlabs/gamutrf
-    build: /home/ltindall/iqt/gamutRF
-    pull_policy: build
+    image: iqtlabs/gamutrf:v0.5.71
+    # image: iqtlabs/gamutrf
+    # build: /home/ltindall/iqt/gamutRF
+    # pull_policy: build
     privileged: true
     networks:
       - gamutrf
